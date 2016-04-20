@@ -18,9 +18,16 @@ then
     exit 1
 fi
 
+MODULE="ELEC6200"
+YEAR=$(date +%y)
+YEAR=$(expr $YEAR - 1)$YEAR
+NOTES=https://secure.ecs.soton.ac.uk/notes/$(echo $MODULE | tr '[:upper:]' '[:lower:]')
+E_MARKING=/e_marking/feedback/$MODULE/$YEAR/Final/marks1.php
+URL=$NOTES$E_MARKING
+
 cd /tmp
 
-wget --quiet --header="Cookie: ecs_intra_session=$session" https://secure.ecs.soton.ac.uk/notes/elec6200/e_marking/feedback/ELEC6200/1516/Final/marks1.php
+wget --quiet --header="Cookie: ecs_intra_session=$session" $URL
 
 if test -e last.txt && (! diff -q last.txt marks1.php > /dev/null)
 then
