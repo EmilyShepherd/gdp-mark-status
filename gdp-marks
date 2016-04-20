@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if ! test -z "$1"
+then
+    session=$1
+    echo $session > ~/.session_id
+elif test -e ~/.session_id
+then
+    session=$(cat ~/.session_id)
+fi
+
+if test -z "$session"
+then
+    echo "USAGE: $0 [Session ID]"
+    echo
+    echo "If you do not provide a session id, it must exist in .session_id"
+
+    exit 1
+fi
+
+cd /tmp
+
+wget --quiet --header="Cookie: ecs_intra_session=$session" https://secure.ecs.soton.ac.uk/notes/elec6200/e_marking/feedback/ELEC6200/1516/Final/marks1.php
+
+if test -e last.txt && (! diff -q last.txt marks1.php > /dev/null)
+then
+    echo " GDP Change Detected!"
+    echo ""
+    echo "#FF0000"
+
+    rm marks1.php
+else
+    mv -f marks1.php last.txt
+
+    echo ""
+    echo ""
+    echo "#FFFFFF"
+fi
+
+exit 0
